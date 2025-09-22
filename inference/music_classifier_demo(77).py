@@ -674,18 +674,8 @@ class MusicGenreClassifierGUI:
         
         # Show number of segments analyzed if full song analysis was used
         if results.get('segments_analyzed', 1) > 1:
-            conf_text = f"Confidence: {confidence:.1f}% (analyzed {results['segments_analyzed']} segments)"
+            conf_text = f"Confidence: {confidence:.1f}%"
             self.confidence_label.config(text=conf_text)
-            
-            # Show genre distribution if available
-            if 'genre_distribution' in results:
-                dist_text = " | Distribution: "
-                for g, count in sorted(results['genre_distribution'].items(), 
-                                      key=lambda x: x[1], reverse=True)[:3]:
-                    dist_text += f"{g}:{count} "
-                self.confidence_label.config(text=conf_text + dist_text)
-        else:
-            self.confidence_label.config(text=f"Confidence: {confidence:.1f}% (single segment)")
         
         # Top 3 predictions
         tk.Label(self.top3_frame, text="Top 3 Predictions:", 
@@ -694,20 +684,6 @@ class MusicGenreClassifierGUI:
             color = "#4CAF50" if i == 0 else "#757575"
             tk.Label(self.top3_frame, text=f"{i+1}. {genre}: {prob:.1f}%", 
                     font=("Arial", 10), fg=color).pack()
-        
-        # Show per-segment results if available
-        if 'segment_results' in results and len(results['segment_results']) > 1:
-            tk.Label(self.top3_frame, text="\nSegment Analysis:", 
-                    font=("Arial", 10, "bold")).pack()
-            # Show first few segment results
-            for i, seg in enumerate(results['segment_results'][:5]):
-                tk.Label(self.top3_frame, 
-                        text=f"  @{seg['position']:.1f}s: {seg['genre']} ({seg['confidence']:.0f}%)",
-                        font=("Arial", 9), fg="#666666").pack()
-            if len(results['segment_results']) > 5:
-                tk.Label(self.top3_frame, 
-                        text=f"  ... and {len(results['segment_results'])-5} more segments",
-                        font=("Arial", 9, "italic"), fg="#999999").pack()
         
         # Visualization
         fig = plt.Figure(figsize=(10, 4), tight_layout=True)
